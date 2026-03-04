@@ -51,7 +51,7 @@ INPUT_HTML = """
         <title>Alarm Requirement Document</title>
         <meta charset="utf-8">
         <style>
-            /* Page container */
+            /* PAGE STYLING */
             page {
                 display: block;
                 max-width: 900px;
@@ -61,40 +61,78 @@ INPUT_HTML = """
                 background-color: #f9f9f9;
                 border-radius: 8px;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                font-family: Arial, sans-serif;
             }
 
-            /* Form */
-            form {
-                max-width: 100%;
+            /* FORM INPUTS */
+            input[type="text"], textarea {
+                width: 100%;
+                box-sizing: border-box;
+                margin-bottom: 10px;
+                padding: 6px;
             }
 
-            /* Fieldset: Grid layout */
-            fieldset .grid {
+            /* PRIORITY LEGEND */
+            .priority-legend {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+                font-size: 0.9em;
+                font-style: italic;
+                color: #555;
+            }
+
+            /* IMPACT ROW GRID */
+            .impact-row {
+                display: grid;
+                grid-template-columns: 220px 1fr;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+
+            /* Left column: title + description */
+            .impact-info {
+                margin-right: 10px;
+            }
+
+            .impact-info .impact-desc {
+                font-size: 0.85em;
+                color: #666;
+            }
+
+            /* Right column: clickable cells grid */
+            .impact-row .grid {
                 display: grid;
                 grid-template-columns: repeat(5, 1fr);
                 gap: 5px;
             }
 
-            fieldset .grid .cell {
+            /* Cells styling */
+            .impact-row .grid .cell {
                 padding: 10px;
                 text-align: center;
-                background-color: #444; /* default dark */
+                background-color: #444;
                 color: #fff;
                 cursor: pointer;
                 border-radius: 5px;
                 user-select: none;
-                transition: background-color 0.2s;
+                transition: background-color 0.2s, color 0.2s;
             }
 
-            /* Fieldset: Hover highlight */
-            fieldset .grid .cell:hover {
+            .impact-row .grid .cell:hover {
                 background-color: #666;
             }
 
-            /* Fieldset: Selected highlight */
-            fieldset .grid .cell.selected {
-                background-color: #aaa; /* lighter to indicate selection */
+            .impact-row .grid .cell.selected {
+                background-color: #aaa;
                 color: #000;
+            }
+
+            /* Submit buttons */
+            input[type="submit"] {
+                padding: 8px 16px;
+                margin-right: 10px;
+                cursor: pointer;
             }
         </style>
     </head>
@@ -102,7 +140,7 @@ INPUT_HTML = """
         <page>
             <h1>Alarm Requirement Document</h1>
 
-            <p>Alarm Requirement Document (ARD) is a document to capture the requirements for specific
+            <p>Alarm Requirement Document (ARD) is a document to capture the requirements for a specific
             alarm. These are used as a low-friction way to get stakeholders to participate in the
             alarm design process. The ARD captures key information about an alarm from business and
             operations perspective. It is not intended to record any technical details.</p>
@@ -138,9 +176,18 @@ INPUT_HTML = """
 
                 <h2>Prioritization</h2>
 
+                <!-- Priority legend -->
+                <div class="priority-legend">
+                    <span>Higher impact / higher importance</span>
+                    <span>Lower impact / lower importance</span>
+                </div>
+
                 <!-- Operator Reaction Time -->
-                <fieldset>
-                    <legend>Operator Reaction Time</legend>
+                <div class="impact-row">
+                    <div class="impact-info">
+                        <strong>Operator Reaction Time</strong>
+                        <div class="impact-desc">Time within which operator must respond</div>
+                    </div>
                     <div class="grid">
                         <div class="cell" data-value="0">0 - Instant</div>
                         <div class="cell" data-value="1">1 - &lt; 10 min</div>
@@ -149,11 +196,14 @@ INPUT_HTML = """
                         <div class="cell" data-value="4">4 - During shift</div>
                     </div>
                     <input type="hidden" name="reaction_time" value="">
-                </fieldset>
+                </div>
 
                 <!-- Operability Impact -->
-                <fieldset>
-                    <legend>Operability Impact</legend>
+                <div class="impact-row">
+                    <div class="impact-info">
+                        <strong>Operability Impact</strong>
+                        <div class="impact-desc">Effect on system operation</div>
+                    </div>
                     <div class="grid">
                         <div class="cell" data-value="0">0 - Plant trip</div>
                         <div class="cell" data-value="1">1 - Unit trip</div>
@@ -162,11 +212,14 @@ INPUT_HTML = """
                         <div class="cell" data-value="4">4 - Minor effect</div>
                     </div>
                     <input type="hidden" name="operability" value="">
-                </fieldset>
+                </div>
 
                 <!-- Business Impact -->
-                <fieldset>
-                    <legend>Business Impact</legend>
+                <div class="impact-row">
+                    <div class="impact-info">
+                        <strong>Business Impact</strong>
+                        <div class="impact-desc">Financial consequences</div>
+                    </div>
                     <div class="grid">
                         <div class="cell" data-value="0">0 - Major loss</div>
                         <div class="cell" data-value="1">1 - Significant loss</div>
@@ -175,11 +228,14 @@ INPUT_HTML = """
                         <div class="cell" data-value="4">4 - Negligible</div>
                     </div>
                     <input type="hidden" name="business" value="">
-                </fieldset>
+                </div>
 
                 <!-- Safety Impact -->
-                <fieldset>
-                    <legend>Safety Impact</legend>
+                <div class="impact-row">
+                    <div class="impact-info">
+                        <strong>Safety Impact</strong>
+                        <div class="impact-desc">Potential for injury or harm</div>
+                    </div>
                     <div class="grid">
                         <div class="cell" data-value="0">0 - Life-threatening</div>
                         <div class="cell" data-value="1">1 - Major injury</div>
@@ -188,11 +244,14 @@ INPUT_HTML = """
                         <div class="cell" data-value="4">4 - None</div>
                     </div>
                     <input type="hidden" name="safety" value="">
-                </fieldset>
+                </div>
 
                 <!-- Security Impact -->
-                <fieldset>
-                    <legend>Security Impact</legend>
+                <div class="impact-row">
+                    <div class="impact-info">
+                        <strong>Security Impact</strong>
+                        <div class="impact-desc">Impact on security / unauthorized access</div>
+                    </div>
                     <div class="grid">
                         <div class="cell" data-value="0">0 - Active breach</div>
                         <div class="cell" data-value="1">1 - Confirmed breach</div>
@@ -201,11 +260,14 @@ INPUT_HTML = """
                         <div class="cell" data-value="4">4 - None</div>
                     </div>
                     <input type="hidden" name="security" value="">
-                </fieldset>
+                </div>
 
                 <!-- Environmental Impact -->
-                <fieldset>
-                    <legend>Environmental Impact</legend>
+                <div class="impact-row">
+                    <div class="impact-info">
+                        <strong>Environmental Impact</strong>
+                        <div class="impact-desc">Effect on environment</div>
+                    </div>
                     <div class="grid">
                         <div class="cell" data-value="0">0 - Major release</div>
                         <div class="cell" data-value="1">1 - Reportable release</div>
@@ -214,20 +276,21 @@ INPUT_HTML = """
                         <div class="cell" data-value="4">4 - None</div>
                     </div>
                     <input type="hidden" name="environment" value="">
-                </fieldset>
+                </div>
 
                 <input type="submit" value="Delete and start over">
                 <input type="submit" value="Generate">
             </form>
         </page>
+
         <script>
-            // Fieldset: Handle cell selection and store value in hidden input
-            document.querySelectorAll('fieldset').forEach(fs => {
-                const hiddenInput = fs.querySelector('input[type="hidden"]');
+            // Handle cell selection for all impact rows
+            document.querySelectorAll('.impact-row').forEach(row => {
+                const hiddenInput = row.querySelector('input[type="hidden"]');
                 if (!hiddenInput) return;
-                fs.querySelectorAll('.cell').forEach(cell => {
+                row.querySelectorAll('.cell').forEach(cell => {
                     cell.addEventListener('click', () => {
-                        fs.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
+                        row.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
                         cell.classList.add('selected');
                         hiddenInput.value = cell.dataset.value;
                     });
