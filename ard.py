@@ -51,6 +51,23 @@ INPUT_HTML = """
         <title>Alarm Requirement Document</title>
         <meta charset="utf-8">
         <style>
+            /* Page container */
+            page {
+                display: block;
+                max-width: 900px;
+                margin: 20px auto;
+                padding: 20px;
+                box-sizing: border-box;
+                background-color: #f9f9f9;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            }
+
+            /* Form */
+            form {
+                max-width: 100%;
+            }
+
             /* Fieldset: Grid layout */
             fieldset .grid {
                 display: grid;
