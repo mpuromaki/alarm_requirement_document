@@ -64,25 +64,26 @@ INPUT_HTML = """
                 font-family: Arial, sans-serif;
             }
 
-            /* FORM INPUTS */
-            input[type="text"], textarea {
+            hr {
+                margin-top: 10px;
+                margin-bottom: 20px;
+            }
+
+            /* GENERIC INPUT FIELD STYLING */
+            input[type="text"] {
                 width: 100%;
                 box-sizing: border-box;
                 margin-bottom: 10px;
                 padding: 6px;
             }
 
-            /* PRIORITY LEGEND */
-            .priority-legend {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 10px;
-                font-size: 0.9em;
-                font-style: italic;
-                color: #555;
+            textarea {
+                field-sizing: content;
+                min-width: 100%;
+                min-height: 80px;
             }
 
-            /* IMPACT ROW GRID */
+            /* IMPACT ROW STYLING */
             .impact-row {
                 display: grid;
                 grid-template-columns: 220px 1fr;
@@ -90,7 +91,6 @@ INPUT_HTML = """
                 margin-bottom: 15px;
             }
 
-            /* Left column: title + description */
             .impact-info {
                 margin-right: 10px;
             }
@@ -100,38 +100,93 @@ INPUT_HTML = """
                 color: #666;
             }
 
-            /* Right column: clickable cells grid */
             .impact-row .grid {
                 display: grid;
-                grid-template-columns: repeat(5, 1fr);
+                grid-auto-flow: column;
+                grid-auto-columns: 1fr;
                 gap: 5px;
             }
 
-            /* Cells styling */
             .impact-row .grid .cell {
                 padding: 10px;
                 text-align: center;
-                background-color: #444;
-                color: #fff;
+                background-color: GhostWhite;
+                color: Black;
                 cursor: pointer;
+                border: 1px solid black;
                 border-radius: 5px;
                 user-select: none;
                 transition: background-color 0.2s, color 0.2s;
             }
 
             .impact-row .grid .cell:hover {
-                background-color: #666;
+                background-color: LightGray;
+                color: Black;
             }
 
             .impact-row .grid .cell.selected {
-                background-color: #aaa;
+                background-color: LightGreen;
+                color: #000;
+            }
+
+            /* BOOLEAN ROW STYLING */
+            .boolean-row {
+                display: grid;
+                grid-template-columns: 1fr 220px;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+
+            .boolean-info {
+                margin-right: 10px;
+            }
+
+            .boolean-info .boolean-desc {
+                font-size: 0.85em;
+                color: #666;
+            }
+
+            .boolean-row .grid {
+                display: grid;
+                grid-auto-flow: column;
+                grid-auto-columns: 1fr;
+                gap: 5px;
+                justify-items: end;
+            }
+
+            .boolean-row .grid .cell {
+                padding: 10px;
+                text-align: center;
+                background-color: GhostWhite;
+                color: Black;
+                cursor: pointer;
+                border: 1px solid black;
+                border-radius: 5px;
+                user-select: none;
+                width: 80px;
+                transition: background-color 0.2s, color 0.2s;
+            }
+
+            .boolean-row .grid .cell:hover {
+                background-color: LightGray;
+                color: Black;
+            }
+
+            .boolean-row .grid .cell.selected {
+                background-color: LightGreen;
                 color: #000;
             }
 
             /* Submit buttons */
-            input[type="submit"] {
+            #results {
+                display: grid;
+                grid-template-columns: auto 1fr auto;
+                gap: 10px;
+                width: 100%;
+            }
+
+            #results input[type="submit"] {
                 padding: 8px 16px;
-                margin-right: 10px;
                 cursor: pointer;
             }
         </style>
@@ -157,45 +212,44 @@ INPUT_HTML = """
             </ol>
 
             <form id="ard" method="post" action="/results">
-                <h2>General information</h2>
+                <hr/>
+                <h2>Alarm Information</h2>
 
                 <label>Alarm Requirement ID:</label>
-                <input name="ard_id" id="ard_id" value="{{ ard_id }}" /><br>
+                <input name="ard_id" id="ard_id" type="text" value="{{ ard_id }}"><br>
 
                 <label>Alarm Requirement Title:</label>
-                <input name="ard_title" id="ard_title"><br>
+                <input name="ard_title" id="ard_title" type="text" placeholder="Connection lost between systems A and B"><br>
+
+                <label>Affected Systems:</label>
+                <input name="ard_systems" id="ard_systems" type="text" placeholder="System A, System B"><br>
 
                 <label>Description of the alarm functionality:</label><br>
-                <textarea name="ard_description" id="ard_description" rows="4" cols="50"></textarea><br>
+                <textarea name="ard_description" id="ard_description" rows="4" placeholder="There is no connectivity between systems A and B."></textarea><br>
 
                 <label>Description of the impact if not mitigated:</label><br>
-                <textarea name="ard_impact" id="ard_impact" rows="4" cols="50"></textarea><br>
+                <textarea name="ard_impact" id="ard_impact" rows="4" placeholder="Critical business process X is stopped when this connection is down."></textarea><br>
 
                 <label>Required operator response:</label><br>
-                <textarea name="ard_response" id="ard_response" rows="4" cols="50"></textarea><br>
+                <textarea name="ard_response" id="ard_response" rows="4" placeholder="Require Major Incident Response and enact manual backup procedure Y."></textarea><br>
 
-                <h2>Prioritization</h2>
-
-                <!-- Priority legend -->
-                <div class="priority-legend">
-                    <span>Higher impact / higher importance</span>
-                    <span>Lower impact / lower importance</span>
-                </div>
+                <hr/>
+                <h2>Priority Analysis</h2>
 
                 <!-- Operator Reaction Time -->
                 <div class="impact-row">
                     <div class="impact-info">
-                        <strong>Operator Reaction Time</strong>
+                        <strong>Reaction Time</strong>
                         <div class="impact-desc">Time within which operator must respond</div>
                     </div>
                     <div class="grid">
-                        <div class="cell" data-value="0">0 - Instant</div>
-                        <div class="cell" data-value="1">1 - &lt; 10 min</div>
-                        <div class="cell" data-value="2">2 - &lt; 30 min</div>
-                        <div class="cell" data-value="3">3 - &lt; 2 hours</div>
-                        <div class="cell" data-value="4">4 - During shift</div>
+                        <div class="cell" data-value="0">Now</div>
+                        <div class="cell" data-value="1">Within 15 minutes</div>
+                        <div class="cell" data-value="2">Within 1 hour</div>
+                        <div class="cell" data-value="3">Within 4 hours</div>
+                        <div class="cell" data-value="4">No action</div>
                     </div>
-                    <input type="hidden" name="reaction_time" value="">
+                    <input type="hidden" name="ard_reaction_time" value="">
                 </div>
 
                 <!-- Operability Impact -->
@@ -205,13 +259,13 @@ INPUT_HTML = """
                         <div class="impact-desc">Effect on system operation</div>
                     </div>
                     <div class="grid">
-                        <div class="cell" data-value="0">0 - Plant trip</div>
-                        <div class="cell" data-value="1">1 - Unit trip</div>
-                        <div class="cell" data-value="2">2 - Degraded operation</div>
-                        <div class="cell" data-value="3">3 - Reduced efficiency</div>
-                        <div class="cell" data-value="4">4 - Minor effect</div>
+                        <div class="cell" data-value="0">Rebuild required</div>
+                        <div class="cell" data-value="1">Lost production</div>
+                        <div class="cell" data-value="2">Reduced capability</div>
+                        <div class="cell" data-value="3">Reduced efficiency</div>
+                        <div class="cell" data-value="4">No effect</div>
                     </div>
-                    <input type="hidden" name="operability" value="">
+                    <input type="hidden" name="ard_operability_impact" value="">
                 </div>
 
                 <!-- Business Impact -->
@@ -221,13 +275,13 @@ INPUT_HTML = """
                         <div class="impact-desc">Financial consequences</div>
                     </div>
                     <div class="grid">
-                        <div class="cell" data-value="0">0 - Major loss</div>
-                        <div class="cell" data-value="1">1 - Significant loss</div>
-                        <div class="cell" data-value="2">2 - Moderate loss</div>
-                        <div class="cell" data-value="3">3 - Minor loss</div>
-                        <div class="cell" data-value="4">4 - Negligible</div>
+                        <div class="cell" data-value="0">Existential</div>
+                        <div class="cell" data-value="1">Major financial loss</div>
+                        <div class="cell" data-value="2">Moderate financial loss</div>
+                        <div class="cell" data-value="3">Neglible financial loss</div>
+                        <div class="cell" data-value="4">No effect</div>
                     </div>
-                    <input type="hidden" name="business" value="">
+                    <input type="hidden" name="ard_business_impact" value="">
                 </div>
 
                 <!-- Safety Impact -->
@@ -237,13 +291,13 @@ INPUT_HTML = """
                         <div class="impact-desc">Potential for injury or harm</div>
                     </div>
                     <div class="grid">
-                        <div class="cell" data-value="0">0 - Life-threatening</div>
-                        <div class="cell" data-value="1">1 - Major injury</div>
-                        <div class="cell" data-value="2">2 - Minor injury</div>
-                        <div class="cell" data-value="3">3 - Near miss</div>
-                        <div class="cell" data-value="4">4 - None</div>
+                        <div class="cell" data-value="0">Life-threatening</div>
+                        <div class="cell" data-value="1">Major injury</div>
+                        <div class="cell" data-value="2">Minor injury</div>
+                        <div class="cell" data-value="3">Near miss</div>
+                        <div class="cell" data-value="4">No effect</div>
                     </div>
-                    <input type="hidden" name="safety" value="">
+                    <input type="hidden" name="ard_safety_impact" value="">
                 </div>
 
                 <!-- Security Impact -->
@@ -253,13 +307,13 @@ INPUT_HTML = """
                         <div class="impact-desc">Impact on security / unauthorized access</div>
                     </div>
                     <div class="grid">
-                        <div class="cell" data-value="0">0 - Active breach</div>
-                        <div class="cell" data-value="1">1 - Confirmed breach</div>
-                        <div class="cell" data-value="2">2 - Suspicious activity</div>
-                        <div class="cell" data-value="3">3 - Policy violation</div>
-                        <div class="cell" data-value="4">4 - None</div>
+                        <div class="cell" data-value="0">Existential</div>
+                        <div class="cell" data-value="1">Breach</div>
+                        <div class="cell" data-value="2">Suspicious activity</div>
+                        <div class="cell" data-value="3">Policy violation</div>
+                        <div class="cell" data-value="4">No effect</div>
                     </div>
-                    <input type="hidden" name="security" value="">
+                    <input type="hidden" name="ard_security_impact" value="">
                 </div>
 
                 <!-- Environmental Impact -->
@@ -269,23 +323,119 @@ INPUT_HTML = """
                         <div class="impact-desc">Effect on environment</div>
                     </div>
                     <div class="grid">
-                        <div class="cell" data-value="0">0 - Major release</div>
-                        <div class="cell" data-value="1">1 - Reportable release</div>
-                        <div class="cell" data-value="2">2 - Contained spill</div>
-                        <div class="cell" data-value="3">3 - Minor release</div>
-                        <div class="cell" data-value="4">4 - None</div>
+                        <div class="cell" data-value="0">Permanent Major damage</div>
+                        <div class="cell" data-value="1">Extended damage</div>
+                        <div class="cell" data-value="2">Contained damage</div>
+                        <div class="cell" data-value="3">Minor effect</div>
+                        <div class="cell" data-value="4">No effect</div>
                     </div>
-                    <input type="hidden" name="environment" value="">
+                    <input type="hidden" name="ard_environmental_impact" value="">
                 </div>
 
-                <input type="submit" value="Delete and start over">
-                <input type="submit" value="Generate">
+                <hr/>
+                <h2>Feasibility Analysis</h2>
+                
+                <!-- Operator Actionability -->
+                <fieldset class="boolean-row">
+                    <div class="boolean-info">
+                        <strong>Operator Actionability</strong>
+                        <div class="boolean-desc">Can the operator take direct action to resolve the alarm condition?</div>
+                    </div>
+                    <div class="grid">
+                        <div class="cell" data-value="true">Yes</div>
+                        <div class="cell" data-value="false">No</div>
+                    </div>
+                    <input type="hidden" name="ard_operator_actionability" value="">
+                </fieldset>
+
+                <!-- Automation Potential -->
+                <fieldset class="boolean-row">
+                    <div class="boolean-info">
+                        <strong>Automation Potential</strong>
+                        <div class="boolean-desc">Could the system automatically detect and implement that operator action to resolve the alarm condition?</div>
+                    </div>
+                    <div class="grid">
+                        <div class="cell" data-value="true">Yes</div>
+                        <div class="cell" data-value="false">No</div>
+                    </div>
+                    <input type="hidden" name="ard_automation_potential" value="">
+                </fieldset>
+
+                <!-- State Dependency -->
+                <fieldset class="boolean-row">
+                    <div class="boolean-info">
+                        <strong>State Dependency</strong>
+                        <div class="boolean-desc">Does the alarm condition depend on the state of the system? Are there situations, control modes or signals which should disable this alarm?</div>
+                    </div>
+                    <div class="grid">
+                        <div class="cell" data-value="true">Yes</div>
+                        <div class="cell" data-value="false">No</div>
+                    </div>
+                    <input type="hidden" name="ard_state_dependency" value="">
+                </fieldset>
+
+                <!-- Alarm Frequency Risk -->
+                <fieldset class="boolean-row">
+                    <div class="boolean-info">
+                        <strong>Alarm Frequency Risk</strong>
+                        <div class="boolean-desc">Could this alarm occur multiple times per shift?</div>
+                    </div>
+                    <div class="grid">
+                        <div class="cell" data-value="true">Yes</div>
+                        <div class="cell" data-value="false">No</div>
+                    </div>
+                    <input type="hidden" name="ard_frequency_risk" value="">
+                </fieldset>
+
+                <!-- Alarm Flood Risk -->
+                <fieldset class="boolean-row">
+                    <div class="boolean-info">
+                        <strong>Alarm Flood Risk</strong>
+                        <div class="boolean-desc">Could this alarm occur or change state repeatedly in short time?</div>
+                    </div>
+                    <div class="grid">
+                        <div class="cell" data-value="true">Yes</div>
+                        <div class="cell" data-value="false">No</div>
+                    </div>
+                    <input type="hidden" name="ard_flood_risk" value="">
+                </fieldset>
+
+                <!-- Alarm Chattering Risk -->
+                <fieldset class="boolean-row">
+                    <div class="boolean-info">
+                        <strong>Alarm Chattering Risk</strong>
+                        <div class="boolean-desc">Could this alarm occur or change state repeatedly in short time?</div>
+                    </div>
+                    <div class="grid">
+                        <div class="cell" data-value="true">Yes</div>
+                        <div class="cell" data-value="false">No</div>
+                    </div>
+                    <input type="hidden" name="ard_chattering_risk" value="">
+                </fieldset>
+
+                <hr/>
+                <div id="results">
+                    <input type="submit" value="Delete">
+                    <div></div>
+                    <input type="submit" value="Generate">
+                </div>
             </form>
         </page>
 
         <script>
             // Handle cell selection for all impact rows
             document.querySelectorAll('.impact-row').forEach(row => {
+                const hiddenInput = row.querySelector('input[type="hidden"]');
+                if (!hiddenInput) return;
+                row.querySelectorAll('.cell').forEach(cell => {
+                    cell.addEventListener('click', () => {
+                        row.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
+                        cell.classList.add('selected');
+                        hiddenInput.value = cell.dataset.value;
+                    });
+                });
+            });
+            document.querySelectorAll('.boolean-row').forEach(row => {
                 const hiddenInput = row.querySelector('input[type="hidden"]');
                 if (!hiddenInput) return;
                 row.querySelectorAll('.cell').forEach(cell => {
