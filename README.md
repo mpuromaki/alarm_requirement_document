@@ -38,3 +38,12 @@ Requirements to be classified as an alarm:
 When implemented properly, alarms are basically prioritized work lists for operators. Proper alarm system is the most important tool for operators in control rooms, but often they actually are the largest blocker to operators work.
 
 ## Screenshots
+
+### Input Form
+
+![Input form, description](screenshots/Screenshot-1.png)
+![Input form, alarm information](screenshots/Screenshot-2.png)
+![Input form, priority analysis](screenshots/Screenshot-3.png)
+![Input form, feasibility analysis](screenshots/Screenshot-4.png)
+
+### Generated Alarm Requirement Document
