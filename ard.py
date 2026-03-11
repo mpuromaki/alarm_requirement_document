@@ -877,4 +877,4 @@ if __name__ == "__main__":
     print("-----------------------------------------------------")
     print("Alarm Requirement Document ==> http://localhost:62682")
     print("-----------------------------------------------------")
-    app.run(port=62682, debug=False, use_reloader=True)
+    app.run(port=62682, debug=False, use_reloader=False)
