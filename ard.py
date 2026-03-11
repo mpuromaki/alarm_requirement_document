@@ -827,12 +827,12 @@ def results():
     ard_response = request.form.get("ard_response")
 
     # - Priority Analysis
-    ard_reaction_time = request.form.get("ard_reaction_time")
-    ard_operability_impact = request.form.get("ard_operability_impact")
-    ard_business_impact = request.form.get("ard_business_impact")
-    ard_safety_impact = request.form.get("ard_safety_impact")
-    ard_security_impact = request.form.get("ard_security_impact")
-    ard_environmental_impact = request.form.get("ard_environmental_impact")
+    ard_reaction_time = request.form.get("ard_reaction_time", type=int)
+    ard_operability_impact = request.form.get("ard_operability_impact", type=int)
+    ard_business_impact = request.form.get("ard_business_impact", type=int)
+    ard_safety_impact = request.form.get("ard_safety_impact", type=int)
+    ard_security_impact = request.form.get("ard_security_impact", type=int)
+    ard_environmental_impact = request.form.get("ard_environmental_impact", type=int)
 
     # - Feasibility Analysis
     ard_operator_actionability = request.form.get("ard_operator_actionability")
@@ -843,6 +843,7 @@ def results():
     ard_chattering_risk = request.form.get("ard_chattering_risk")
 
     # Process ARD data
+    calculated_priority = min(ard_reaction_time, ard_operability_impact, ard_business_impact, ard_safety_impact, ard_security_impact, ard_environmental_impact)
 
     # Return rendered results page
     return render_template_string(
@@ -865,7 +866,7 @@ def results():
         ard_frequency_risk=ard_frequency_risk,
         ard_flood_risk=ard_flood_risk,
         ard_chattering_risk=ard_chattering_risk,
-        calculated_priority=0,  # Placeholder, implement priority calculation logic here
+        calculated_priority=calculated_priority,
     )
 
 # -----------------------------------------------------------------------------
