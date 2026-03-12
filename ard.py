@@ -455,7 +455,7 @@ RESULT_HTML = """
 <!doctype html>
 <html>
 	<head>
-		<title>ARD{{ ard_id }}</title>
+		<title>ARD-{{ ard_id }}</title>
 		<meta charset="utf-8">
 
 		<style>
@@ -682,7 +682,7 @@ RESULT_HTML = """
 			<div class="header">
 				
                 <div class="id-container">
-					ARD{{ ard_id }}
+					ARD-{{ ard_id }}
 				</div>
 				
                 <div id="priority-container">
