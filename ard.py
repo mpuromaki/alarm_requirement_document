@@ -868,7 +868,7 @@ def results():
         implementation_notes.append("Modifying control software to mitigate chattering. Implement dynamic suppression. High priority alarms must not chatter.")
     
     if ard_state_dependency and medium_priority_alarm:
-        implementation_notes.append("Implement state-based automatic alarm suppression.")
+        implementation_notes.append("Implement conditional alarming.")
 
     if ard_flood_risk and is_an_alarm:
         implementation_notes.append("Implement alarm grouping and dynamic priority based alarm suppression.")
