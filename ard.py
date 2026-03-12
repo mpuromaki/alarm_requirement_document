@@ -865,7 +865,7 @@ def results():
         implementation_notes.append("Modify control software to mitigate alarming condition. High priority alarms must be rare.")
     
     if ard_chattering_risk and high_priority_alarm:
-        implementation_notes.append("Modifying control software to mitigate chattering. Implement dynamic suppression. High priority alarms must not chatter.")
+        implementation_notes.append("Modifying control software to mitigate chattering. Implement dynamic suppression, delays and hysterisis. High priority alarms must not chatter.")
     
     if ard_state_dependency and medium_priority_alarm:
         implementation_notes.append("Implement conditional alarming.")
@@ -874,7 +874,7 @@ def results():
         implementation_notes.append("Implement alarm grouping and dynamic priority based alarm suppression.")
 
     if ard_chattering_risk and (is_an_alarm and not high_priority_alarm):
-        implementation_notes.append("Implement alarm delays. Consider modifying control software to mitigate chattering. Consider dynamic suppression.")
+        implementation_notes.append("Implement alarm delays and hysterisis. Consider modifying control software to mitigate chattering. Consider dynamic suppression.")
 
     # Return rendered results page
     return render_template_string(
