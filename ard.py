@@ -391,7 +391,7 @@ INPUT_HTML = """
                 <fieldset class="boolean-row">
                     <div class="boolean-info">
                         <strong>Alarm Flood Risk</strong>
-                        <div class="boolean-desc">Could this alarm occur or change state repeatedly in short time?</div>
+                        <div class="boolean-desc">Could this alarm indicate a situation which likely generates many other alarms as well?</div>
                     </div>
                     <div class="grid">
                         <div class="cell" data-value="true">Yes</div>
@@ -733,19 +733,21 @@ RESULT_HTML = """
 			</div>
 
 
-			<div class="guidance">
+            {% if implementation_notes %}
+            <div class="guidance">
 
-				<div class="section-title">
-					Implementation Guidance
-				</div>
+                <div class="section-title">
+                    Implementation Guidance
+                </div>
 
-				<ul>
-					{% for note in implementation_notes %}
-					<li>{{ note }}</li>
-					{% endfor %}
-				</ul>
+                <ul>
+                    {% for note in implementation_notes %}
+                    <li>{{ note }}</li>
+                    {% endfor %}
+                </ul>
 
-			</div>
+            </div>
+            {% endif %}
 
 			<div class="footnote">
 				<div class="footnote-grid">
@@ -835,15 +837,44 @@ def results():
     ard_environmental_impact = request.form.get("ard_environmental_impact", type=int)
 
     # - Feasibility Analysis
-    ard_operator_actionability = request.form.get("ard_operator_actionability")
-    ard_automation_potential = request.form.get("ard_automation_potential")
-    ard_state_dependency = request.form.get("ard_state_dependency")
-    ard_frequency_risk = request.form.get("ard_frequency_risk")
-    ard_flood_risk = request.form.get("ard_flood_risk")
-    ard_chattering_risk = request.form.get("ard_chattering_risk")
+    ard_operator_actionability = request.form.get("ard_operator_actionability") == "true"
+    ard_automation_potential = request.form.get("ard_automation_potential") == "true"
+    ard_state_dependency = request.form.get("ard_state_dependency") == "true"
+    ard_frequency_risk = request.form.get("ard_frequency_risk") == "true"
+    ard_flood_risk = request.form.get("ard_flood_risk") == "true"
+    ard_chattering_risk = request.form.get("ard_chattering_risk") == "true"
 
-    # Process ARD data
+    # Calculate priority
     calculated_priority = min(ard_reaction_time, ard_operability_impact, ard_business_impact, ard_safety_impact, ard_security_impact, ard_environmental_impact)
+    is_an_alarm = calculated_priority <= 3
+    high_priority_alarm = calculated_priority <= 1
+    medium_priority_alarm = calculated_priority <= 2
+    low_priority_alarm = calculated_priority <= 3
+    not_an_alarm = calculated_priority >= 4
+
+    # Calculate implementation notes
+    implementation_notes = list()
+
+    if not ard_operator_actionability and (ard_reaction_time <= 2 or high_priority_alarm): 
+        implementation_notes.append("Implement an mechanism for operator to resolve the alarming condition.")
+
+    if not ard_automation_potential and high_priority_alarm:
+        implementation_notes.append("Implement automatic detection and resolution mechanism to reduce impact.")
+
+    if ard_frequency_risk and high_priority_alarm:
+        implementation_notes.append("Modify control software to mitigate alarming condition. High priority alarms must be rare.")
+    
+    if ard_chattering_risk and high_priority_alarm:
+        implementation_notes.append("Modifying control software to mitigate chattering. Implement dynamic suppression. High priority alarms must not chatter.")
+    
+    if ard_state_dependency and medium_priority_alarm:
+        implementation_notes.append("Implement state-based automatic alarm suppression.")
+
+    if ard_flood_risk and is_an_alarm:
+        implementation_notes.append("Implement alarm grouping and dynamic priority based alarm suppression.")
+
+    if ard_chattering_risk and (is_an_alarm and not high_priority_alarm):
+        implementation_notes.append("Implement alarm delays. Consider modifying control software to mitigate chattering. Consider dynamic suppression.")
 
     # Return rendered results page
     return render_template_string(
@@ -867,6 +898,7 @@ def results():
         ard_flood_risk=ard_flood_risk,
         ard_chattering_risk=ard_chattering_risk,
         calculated_priority=calculated_priority,
+        implementation_notes=implementation_notes,
     )
 
 # -----------------------------------------------------------------------------
